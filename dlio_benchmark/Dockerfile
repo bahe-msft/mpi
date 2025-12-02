@@ -27,7 +27,7 @@ ENV PATH="${VENV_PATH}/bin:${PATH}"
 WORKDIR /workspace
 
 # Shallow clone just the tag we need, install, and clean up.
-RUN git clone --depth 1 --branch v2.0.1 https://github.com/argonne-lcf/dlio_benchmark.git && \
+RUN git clone --depth 1 --branch metrics https://github.com/bahe-msft/dlio_benchmark.git && \
     cd dlio_benchmark && \
     pip install --no-cache-dir . && \
     cd .. && \
