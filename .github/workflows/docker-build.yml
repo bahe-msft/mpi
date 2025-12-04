@@ -57,8 +57,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: ${{ inputs.skip_cache }}
-          cache-from: ${{ inputs.skip_cache == false && 'type=gha' || '' }}
-          cache-to: ${{ inputs.skip_cache == false && 'type=gha,mode=max' || '' }}
+          cache-from: ${{ !inputs.skip_cache && 'type=gha' || '' }}
+          cache-to: ${{ !inputs.skip_cache && 'type=gha,mode=max' || '' }}
 
   build-azure-karpenter:
     if: ${{ inputs.targets == '' || contains(inputs.targets, 'azure-karpenter') }}
@@ -82,7 +82,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-          cache: true
+          cache: ${{ !inputs.skip_cache }}
 
       - name: Install ko
         uses: ko-build/setup-ko@v0.8
