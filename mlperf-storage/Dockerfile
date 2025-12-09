@@ -26,8 +26,8 @@ RUN python3 -m venv "${VENV_PATH}" && \
 ENV PATH="${VENV_PATH}/bin:${PATH}"
 WORKDIR /workspace
 
-# Shallow clone the storage repository, install, and clean up.
-RUN git clone --depth 1 https://github.com/mlcommons/storage.git && \
+# Shallow clone the storage repository at v2.0 tag, install, and clean up.
+RUN git clone --depth 1 --branch v2.0 https://github.com/mlcommons/storage.git && \
     cd storage && \
     pip install --no-cache-dir . && \
     cd .. && \

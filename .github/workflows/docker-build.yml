@@ -87,7 +87,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}/mlperf-storage
           tags: |
-            type=raw,value=v2.0.0b1-openmpi
+            type=raw,value=v2.0-openmpi
             type=sha
 
       - name: Build and push Docker image
