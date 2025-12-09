@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       targets:
-        description: 'Comma-separated list of targets to build (dlio_benchmark, storage, azure-karpenter). Leave empty to build all.'
+        description: 'Comma-separated list of targets to build (dlio_benchmark, mlperf-storage, azure-karpenter). Leave empty to build all.'
         required: false
         default: ''
         type: string
@@ -60,8 +60,8 @@ jobs:
           cache-from: ${{ !inputs.skip_cache && 'type=gha' || '' }}
           cache-to: ${{ !inputs.skip_cache && 'type=gha,mode=max' || '' }}
 
-  build-storage:
-    if: ${{ inputs.targets == '' || contains(inputs.targets, 'storage') }}
+  build-mlperf-storage:
+    if: ${{ inputs.targets == '' || contains(inputs.targets, 'mlperf-storage') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -85,7 +85,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}/storage
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/mlperf-storage
           tags: |
             type=raw,value=v2.0.0b1-openmpi
             type=sha
@@ -93,8 +93,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./storage
-          file: ./storage/Dockerfile
+          context: ./mlperf-storage
+          file: ./mlperf-storage/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

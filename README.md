@@ -7,7 +7,7 @@ This repository hosts MPI-related Dockerfiles and Docker images.
 | Image | Tag | Base |
 |-------|-----|------|
 | `ghcr.io/bahe-msft/mpi/dlio_benchmark` | `v2.0.1-mpich` | `mpioperator/mpich:v0.7.0` |
-| `ghcr.io/bahe-msft/mpi/storage` | `v2.0.0b1-openmpi` | `mpioperator/openmpi:v0.7.0` |
+| `ghcr.io/bahe-msft/mpi/mlperf-storage` | `v2.0.0b1-openmpi` | `mpioperator/openmpi:v0.7.0` |
 
 ## License
 
