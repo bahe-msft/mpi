@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       targets:
-        description: 'Comma-separated list of targets to build (dlio_benchmark, azure-karpenter). Leave empty to build all.'
+        description: 'Comma-separated list of targets to build (dlio_benchmark, storage, azure-karpenter). Leave empty to build all.'
         required: false
         default: ''
         type: string
@@ -53,6 +53,48 @@ jobs:
         with:
           context: ./dlio_benchmark
           file: ./dlio_benchmark/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          no-cache: ${{ inputs.skip_cache }}
+          cache-from: ${{ !inputs.skip_cache && 'type=gha' || '' }}
+          cache-to: ${{ !inputs.skip_cache && 'type=gha,mode=max' || '' }}
+
+  build-storage:
+    if: ${{ inputs.targets == '' || contains(inputs.targets, 'storage') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/storage
+          tags: |
+            type=raw,value=v2.0.0b1-openmpi
+            type=sha
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./storage
+          file: ./storage/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
