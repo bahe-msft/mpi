@@ -30,25 +30,25 @@ RUN apt-get update && \
 RUN ldconfig && \
     ln -sf /usr/local/bin/python3.11 /usr/local/bin/python3
 
+# Set environment variables for pip trusted hosts
+ENV PIP_TRUSTED_HOST="pypi.org files.pythonhosted.org pypi.nvidia.com"
+
 # Create venv with Python 3.11, upgrade pip, install Python deps
 # (no-cache-dir to avoid pip cache bloat)
-# Use --trusted-host flags for pip operations due to SSL certificate issues with copied Python
 RUN python3.11 -m venv "${VENV_PATH}" && \
-    "${VENV_PATH}/bin/pip" install --trusted-host pypi.org --trusted-host files.pythonhosted.org --upgrade pip && \
-    "${VENV_PATH}/bin/pip" install --trusted-host pypi.org --trusted-host files.pythonhosted.org --no-cache-dir certifi && \
-    "${VENV_PATH}/bin/pip" install --trusted-host pypi.org --trusted-host files.pythonhosted.org --no-cache-dir pybind11
+    "${VENV_PATH}/bin/pip" install --upgrade pip && \
+    "${VENV_PATH}/bin/pip" install --no-cache-dir certifi pybind11
 
 ENV PATH="${VENV_PATH}/bin:${PATH}"
 WORKDIR /workspace
 
 # Shallow clone the storage repository at v2.0 tag, install, and clean up.
-# Use PIP_TRUSTED_HOST environment variable to bypass SSL verification
-# Configure git globally to skip SSL verification (pip will also use git for dependencies)
-# Add pypi.nvidia.com as extra index for NVIDIA DALI
+# Note: Global git http.sslVerify=false is temporarily set for this RUN command only
+# due to SSL certificate issues when using copied Python. Pip will use git to clone
+# dependencies, so we need the global config.
 RUN git config --global http.sslVerify false && \
     git clone --depth 1 --branch v2.0 https://github.com/mlcommons/storage.git && \
     cd storage && \
-    PIP_TRUSTED_HOST="pypi.org files.pythonhosted.org pypi.nvidia.com" \
     pip install --extra-index-url https://pypi.nvidia.com --no-cache-dir . && \
     cd .. && \
     rm -rf storage && \
