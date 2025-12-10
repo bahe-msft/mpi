@@ -27,8 +27,11 @@ ENV PATH="${VENV_PATH}/bin:${PATH}"
 WORKDIR /workspace
 
 # Shallow clone the storage repository at v2.0 tag, install, and clean up.
+# NOTE: We patch the pyproject.toml to use a specific commit hash so we can remove the outdated tensorflow_io dependency
+# ref: https://github.com/argonne-lcf/dlio_benchmark/pull/317
 RUN git clone --depth 1 --branch v2.0 https://github.com/mlcommons/storage.git && \
     cd storage && \
+    sed -i 's/@mlperf_storage_v2.0/@695f3a3ca995e8f5d0c9f4b3a7b7400068a28afb/g' pyproject.toml && \
     pip install --no-cache-dir . && \
     cd .. && \
     rm -rf storage && \
