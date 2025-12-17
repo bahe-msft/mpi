@@ -20,7 +20,7 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Check if python3.12 is available, if not download and compile it
-RUN if ! command -v python3.12 &> /dev/null; then \
+RUN if ! command -v python3.12 > /dev/null 2>&1; then \
         echo "python3.12 not found, downloading and compiling Python ${PYTHON_VERSION}..." && \
         apt-get update && \
         apt-get install -y --no-install-recommends \
