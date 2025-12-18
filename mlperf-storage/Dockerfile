@@ -59,6 +59,9 @@ RUN python3.12 -m venv "${VENV_PATH}" && \
     "${VENV_PATH}/bin/pip" install --no-cache-dir pybind11
 
 ENV PATH="${VENV_PATH}/bin:${PATH}"
+
+# Create /workspace directory and set ownership to mpiuser
+RUN mkdir -p /workspace && chown mpiuser:mpiuser /workspace
 WORKDIR /workspace
 
 # Clone the storage repository at specific commit, install, and clean up.
